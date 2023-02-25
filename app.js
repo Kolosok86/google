@@ -35,9 +35,8 @@ setIntervalCustom(async () => {
 
   for (let account of accounts) {
     controller.addAccounts(account)
-    break // TODO
   }
-}, '5m')
+}, '30m')
 
 const app = new Koa()
 
