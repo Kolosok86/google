@@ -19,9 +19,10 @@ export class Account {
 
   async checkSession() {
     try {
+      const expire = this.expire * 1000 - ms('30m')
       const now = Date.now()
 
-      if (!this.expire || this.expire < now) {
+      if (!this.expire || expire < now) {
         await this.checkToken()
       }
     } catch (e) {
@@ -54,15 +55,17 @@ export class Account {
     const response = await oAuth(this.android, this.token, this.sig)
     if (!response) return
 
-    const { Expiry, Auth, accountId } = response
+    const { Expiry, Auth, accountId, ExpiresInDurationSec } = response
 
-    this.expire = +Expiry * 1000 - ms('30m')
+    this.updated = (+Expiry - +ExpiresInDurationSec) * 1000
+    this.expire = +Expiry
 
     logger.info(`%s | updated photo access token`, this.username)
 
     await this.updateAccount({
       account: accountId,
       auth: Auth,
+      updated: this.updated,
       expire: this.expire,
     })
   }

@@ -13,6 +13,7 @@ const accountSchema = new Schema(
     account: String,
     auth: String,
     expire: Number,
+    updated: Number,
   },
   {
     versionKey: false,

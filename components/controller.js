@@ -1,5 +1,5 @@
-import { Account } from './account.js'
 import { setIntervalCustom } from '../utils/index.js'
+import { Account } from './account.js'
 
 export class Controller {
   constructor() {
