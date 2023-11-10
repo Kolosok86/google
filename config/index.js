@@ -28,6 +28,12 @@ const conf = convict({
     default: 'mongodb://localhost:27017/example?authSource=admin',
     env: 'MONGO',
   },
+  proxy: {
+    doc: 'Url to tls proxy server',
+    format: String,
+    default: 'http://127.0.0.1:3128',
+    env: 'PROXY',
+  },
 })
 
 conf.validate()

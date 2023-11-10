@@ -1,23 +1,16 @@
 import Constants from '../config/constants.js'
 import { readFile } from 'fs/promises'
-import rp from 'request-promise'
+import { request } from './external.js'
+import { stringify } from 'querystring'
 import nodeRSA from 'node-rsa'
 import crypto from 'crypto'
 
-const request = rp.defaults({
-  encoding: 'utf8',
-  agentOptions: {
-    ciphers: Constants.ciphers,
-  },
-  headers: {
-    'User-Agent': 'GoogleAuth/1.4 (google_arm64 RSR1.210722.002); gzip',
-  },
-})
+const url = 'https://android.clients.google.com/auth'
 
 export async function logIn(username, password, android, sig) {
   const encrypted = await generateSignature(username, password)
 
-  const form = {
+  const form = stringify({
     Email: username,
     EncryptedPasswd: encrypted,
     accountType: 'HOSTED_OR_GOOGLE',
@@ -32,18 +25,23 @@ export async function logIn(username, password, android, sig) {
     source: 'android',
     client_sig: sig,
     callerSig: sig,
-  }
-
-  const response = await request.post({
-    url: 'https://android.googleapis.com/auth',
-    form,
   })
 
-  return parseKeyValues(response)
+  const body = Buffer.from(form, 'utf8')
+
+  const response = await request({
+    url: url,
+    headers: getHeaders(android, body.byteLength),
+    method: 'POST',
+    body,
+  })
+
+  const text = response?.body?.toString()
+  return parseKeyValues(text)
 }
 
 export async function oAuth(android, token, sig) {
-  const form = {
+  const form = stringify({
     Token: token,
     app: 'com.google.android.apps.photos',
     callerSig: sig,
@@ -54,14 +52,19 @@ export async function oAuth(android, token, sig) {
       'oauth2:openid https://www.googleapis.com/auth/mobileapps.native https://www.googleapis.com/auth/photos.native',
     has_permission: '1',
     get_accountid: '1',
-  }
-
-  const result = await request.post({
-    url: 'https://android.googleapis.com/auth',
-    form,
   })
 
-  return parseKeyValues(result)
+  const body = Buffer.from(form, 'utf8')
+
+  const response = await request({
+    url: url,
+    headers: getHeaders(android, body.byteLength),
+    method: 'POST',
+    body,
+  })
+
+  const text = response?.body?.toString()
+  return parseKeyValues(text)
 }
 
 function parseKeyValues(body) {
@@ -92,4 +95,17 @@ async function generateSignature(email, password) {
   base64Output = base64Output.replace(/\//g, '_')
 
   return base64Output
+}
+
+function getHeaders(device, length) {
+  return {
+    Host: 'android.googleapis.com',
+    Device: device,
+    App: 'com.google.android.gms',
+    'Accept-Encoding': 'gzip, deflate',
+    'User-Agent': Constants.userAgent,
+    'Content-Length': length,
+    'Content-Type': 'application/x-www-form-urlencoded',
+    Connection: 'Keep-Alive',
+  }
 }
