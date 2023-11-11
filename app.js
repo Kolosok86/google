@@ -13,10 +13,7 @@ const MONGO = conf.get('mongo')
 const PORT = conf.get('port')
 
 mongoose.set('strictQuery', true)
-mongoose.connect(MONGO, {
-  useUnifiedTopology: true,
-  useNewUrlParser: true,
-})
+mongoose.connect(MONGO)
 
 mongoose.connection.on('open', () => {
   logger.info('Mongo database is ready!')
