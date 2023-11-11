@@ -92,10 +92,11 @@ jobs:
             export MONGO=${{ secrets.MONGO }}
             export NODE_ENV=${{ secrets.NODE_ENV }}
             export PORT=${{ secrets.PORT }}
+            export PROXY=${{ secrets.PROXY }}
   
             # Run a new container from a new image
             docker run -e LOG_LEVEL -e MONGO \
-            -e NODE_ENV -e PORT -d \
+            -e NODE_ENV -e PROXY -e PORT -d \
             --restart always --net internal \
             --publish ${{ secrets.PORT }}:${{ secrets.PORT }} \
             --name $(echo $CONTAINER) \
