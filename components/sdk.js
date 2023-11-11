@@ -99,7 +99,7 @@ async function generateSignature(email, password) {
 
 function getHeaders(device, length) {
   return {
-    Host: 'android.googleapis.com',
+    Host: 'android.clients.google.com',
     Device: device,
     App: 'com.google.android.gms',
     'Accept-Encoding': 'gzip, deflate',
