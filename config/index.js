@@ -1,7 +1,7 @@
 import convict from 'convict'
 import dotenv from 'dotenv'
 
-dotenv.config()
+dotenv.config({ quiet: true})
 
 const conf = convict({
   env: {
