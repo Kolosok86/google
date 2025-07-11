@@ -99,6 +99,6 @@ jobs:
             docker run -e LOG_LEVEL -e MONGO \
             -e NODE_ENV -e PROXY -e PORT -d \
             --restart always --net internal \
-            --publish ${{ secrets.PORT }}:${{ secrets.PORT }} \
+            --publish ${{ secrets.PUBLISH_PORT }}:${{ secrets.PORT }} \
             --name $(echo $CONTAINER) \
             ${{ secrets.REGISTRY }}/$(echo $CONTAINER):latest
