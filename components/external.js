@@ -1,8 +1,8 @@
 import Constants from '../config/constants.js'
 import { httpRequest } from './requester.js'
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import { logger } from '../services/logger.js'
 import { conf } from '../config/index.js'
-import agents from 'https-proxy-agent'
 
 const proxy = conf.get('proxy')
 
@@ -14,7 +14,7 @@ const masterHeaders = {
 
 export function request({ url, headers, method, body }) {
   const options = {
-    agent: new agents.HttpsProxyAgent(proxy),
+    agent: new HttpsProxyAgent(proxy),
     headers: { ...masterHeaders, ...headers },
     method: method || 'GET',
   }
